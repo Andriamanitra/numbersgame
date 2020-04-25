@@ -1,5 +1,8 @@
 <h2><a href="javascript:window.location.reload(true)"><%= game.username %>'s game</a></h2>
-
+<h2>Level <%= game.level %></h2>
+<form id="nextlevelform" method="post">
+    <button id="nextLevelButton" type="submit" disabled>Next level!</button>
+</form>
 <h2>Timer</h2>
 <span id="timer"></span>
 
@@ -26,6 +29,7 @@
 <script>
 var guesses = [];
 var ws = new WebSocket(document.location.href.replace("http", "ws"));
+document.getElementById("nextlevelform").action = window.location+'/next'
 
 function addGuess(guess) {
   var parent = document.getElementById("guesses");
@@ -47,6 +51,14 @@ function addGuess(guess) {
   guesses.push(guess);
 }
 
+function updateContinueButton(current, required) {
+  var butt = document.getElementById("nextLevelButton");
+  butt.innerHTML = "Next level: "+current+"/"+required;
+  if (current >= required) {
+    butt.disabled = false;
+  }
+}
+
 function updateTimer(remaining) {
   document.getElementById("timer").innerHTML = remaining;
 }
@@ -59,7 +71,6 @@ document.getElementById("guessForm").addEventListener("submit", function(e) {
 })
 
 ws.onmessage = function (event) {
-  console.log(event.data)
   const i = event.data.indexOf(" ");
   var msgType = event.data.slice(0,i);
   var message = event.data.slice(i+1);
@@ -67,6 +78,7 @@ ws.onmessage = function (event) {
   switch(msgType) {
     default:
       console.log(event.data);
+      break;
     case "ALLGUESSES":
       for (const guess of JSON.parse(message)) {
         addGuess(guess);
@@ -77,6 +89,12 @@ ws.onmessage = function (event) {
       break;
     case "TIMER":
       updateTimer(message);
+      break;
+    case "STATUS":
+      var splitted = message.split("/");
+      var current = splitted[0];
+      var required = splitted[1];
+      updateContinueButton(Number(current), Number(required))
       break;
   }
 }

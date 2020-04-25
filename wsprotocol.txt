@@ -10,8 +10,10 @@ ALLGUESSES <[] of Guess (as json)>
 GUESSED <Guess (as json)>
 - broadcast whenever a valid guess is made
 
-LEVELCOMPLETED
-- broadcast when the criteria for passing the level is met
+STATUS <corrects>/<required>
+- broadcast whenever a correct guess is made
+- broadcast on round start
+- sent to websocket on join
 
 GAMEOVER
 - broadcast when game ends

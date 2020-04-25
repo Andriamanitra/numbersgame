@@ -49,7 +49,7 @@ module Numbersgame
     end
 
     def leave(channel : String)
-      # TODO
+      @bot.part Crirc::Protocol::Chan.new(channel.downcase)
     end
 
     def handle_message(channel, sender, msg)
@@ -66,6 +66,7 @@ module Numbersgame
       end
     end
   end
+
 
   class Game
     @@tolerance = 0.05  # How much a guess can be off from nearest whole number and still be rounded
@@ -84,24 +85,29 @@ module Numbersgame
       @username = username
       @level = 1
       @timer = 30
-      @stopped = true  # when true timer will stop running
+      @stopped = false  # when true timer will stop running TODO: should be true to begin with
       @numbers = get_numbers(1)
       @targets = get_targets(1)
       @remaining = @targets.clone
       @guesses = [] of Guess
       @sockets = [] of HTTP::WebSocket
       @@irc.join("##{username}")
+      level_begin
     end
 
     def add_socket(socket : HTTP::WebSocket)
       @sockets << socket
     end
 
-    def broadcast(msg : String)
-      puts "WS-BROADCAST: #{msg}"
+    def broadcast(msg : String, silent=false)
+      puts "WS-BROADCAST: #{msg}" unless silent
       @sockets.each do |socket|
         socket.send msg
       end
+    end
+
+    def corrects()
+      @targets.size - @remaining.size
     end
 
     def delete_socket(socket : HTTP::WebSocket)
@@ -118,7 +124,7 @@ module Numbersgame
     end
 
     def get_targets(level : Int32)
-      return Mjirandom.sample(101, 900+100*level, 8+level).sort
+      return Mjirandom.sample(101, 900+100*level, 7+level).sort
     end
 
     def is_valid?(guess : String)
@@ -139,23 +145,37 @@ module Numbersgame
     end
 
     def level_begin()
-      @targets = Mjirandom.sample(101, 1337, 8).sort
+      @numbers = get_numbers(@level)
+      @targets = get_targets(@level)
       @remaining = @targets.clone
       @guesses = [] of Guess
+      puts "Starting level #{@level} with targets #{@targets.to_s}"
+      broadcast("STATUS #{corrects()}/#{required()}")
+      start_timer(120)
     end
 
     def level_completed()
-      @remaining.size < 3
+      corrects() >= required()
     end
 
     def level_end()
       @stopped = true
-      if self.level_completed
-        # TODO: next level
-        @level += 1
-      else
-        self.broadcast("GAMEOVER")
+      unless level_completed
+        broadcast("GAMEOVER")
+        @@irc.leave("##{@username}")
+        Numbersgame.games.delete(username.downcase)
       end
+    end
+
+    def level_next()
+      if level_completed
+        @level += 1
+        level_begin()
+      end
+    end
+
+    def required()
+      @targets.size-3
     end
 
     def start_timer(seconds : Int32)
@@ -163,22 +183,22 @@ module Numbersgame
       @stopped = false
       spawn do
         loop do
-          self.broadcast("TIMER #{@timer}")
+          broadcast("TIMER #{@timer}", silent=true)
           if @timer == 0
             @stopped = true
-            self.level_end
+            level_end
             break
           end
           sleep 1
-          @timer -= 1
           break if @stopped
+          @timer -= 1
         end
       end
     end
 
     def submit_guess(guesser : String, guess : String)
       return if @stopped
-      return unless self.is_valid?(guess)
+      return unless is_valid?(guess)
 
       begin
         result = Calcium.calculate(guess)
@@ -193,15 +213,15 @@ module Numbersgame
       if @remaining.includes?(result)
         hit = true
         @remaining.delete result
-        if self.level_completed
-          self.broadcast("LEVELCOMPLETED")
-        end
+        broadcast("STATUS #{corrects()}/#{required()}")
       end
       guessed = {user: guesser, guess: guess, result: result.to_s, hit: hit}
       @guesses << guessed
-      self.broadcast "GUESSED #{guessed.to_json}"
+      broadcast "GUESSED #{guessed.to_json}"
     end
   end
+
+
 
   get "/" do
     render "src/views/index.ecr", "src/views/layout.ecr"
@@ -225,6 +245,15 @@ module Numbersgame
     end
   end
 
+  # TODO: authentication
+  post "/game/:username/next" do |env|
+    username = env.params.url["username"].as(String)
+    if @@games.has_key?(username)
+      @@games[username].level_next()
+    end
+    env.redirect "/game/#{username.downcase}"
+  end
+
   ws "/game/:username" do |socket, context|
     username = context.ws_route_lookup.params["username"].downcase
     next unless @@games.has_key?(username)
@@ -234,6 +263,7 @@ module Numbersgame
     game.add_socket socket
     socket.send "ALLGUESSES #{game.guesses.to_json}"
     socket.send "TIMER #{game.timer}"
+    socket.send "STATUS #{game.corrects}/#{game.required}"
 
     # Listen to messages
     socket.on_message do |message|
