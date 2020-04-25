@@ -84,8 +84,8 @@ module Numbersgame
     def initialize(username)
       @username = username
       @level = 1
-      @timer = 30
-      @stopped = false  # when true timer will stop running TODO: should be true to begin with
+      @timer = 120
+      @stopped = true
       @numbers = get_numbers(1)
       @targets = get_targets(1)
       @remaining = @targets.clone
@@ -115,16 +115,37 @@ module Numbersgame
     end
 
     def get_numbers(level : Int32)
-      Multiset.new (
-        Mjirandom.sample(1, 9, 2) +
-        Mjirandom.sample(1, 9, 2) +
-        [10, 20, 25, 50, 75, 100].sample(2) +
-        Mjirandom.sample(1, 150, 1)
-      )
+      case level
+      when 1
+        Multiset.new (
+          [1, 1, 2] +
+          Mjirandom.sample(3, 9, 2) +
+          [10, 20, 25, 50, 75, 100].sample(2)
+        )
+      when .<(10)
+        Multiset.new (
+          Mjirandom.sample(1, 9, 2) +
+          Mjirandom.sample(1, 9, 2) +
+          [10, 20, 25, 50, 75, 100].sample(2) +
+          Mjirandom.sample(1, 150, 1)
+        )
+      else
+        Multiset.new (
+          Mjirandom.sample(1, 9, 2) +
+          Mjirandom.sample(1, 9, 2) +
+          [10, 20, 25, 50, 75, 100].sample(2) +
+          Mjirandom.sample(10*level, 100+10*level, 2)
+        )
+      end
     end
 
     def get_targets(level : Int32)
-      return Mjirandom.sample(101, 300+100*level, 6+level).sort
+      case level
+      when 1
+        Mjirandom.sample(51, 200, 7).sort
+      else
+        Mjirandom.sample(101, 300+100*level, 6+level).sort
+      end
     end
 
     def is_valid?(guess : String)
