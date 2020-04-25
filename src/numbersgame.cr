@@ -181,6 +181,7 @@ module Numbersgame
     def start_timer(seconds : Int32)
       @timer = seconds
       @stopped = false
+      level = @level
       spawn do
         loop do
           broadcast("TIMER #{@timer}", silent=true)
@@ -190,7 +191,7 @@ module Numbersgame
             break
           end
           sleep 1
-          break if @stopped
+          break if @stopped || @level > level
           @timer -= 1
         end
       end
