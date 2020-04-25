@@ -124,7 +124,7 @@ module Numbersgame
     end
 
     def get_targets(level : Int32)
-      return Mjirandom.sample(101, 900+100*level, 7+level).sort
+      return Mjirandom.sample(101, 400+100*level, 7+level).sort
     end
 
     def is_valid?(guess : String)
