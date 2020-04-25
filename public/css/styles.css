@@ -1,0 +1,34 @@
+.title, .title > *{
+    font-size: 2em;
+}
+a {
+    font-family: 'OuroborosRegular', Arial, Helvetica, sans-serif;
+    color: black;
+}
+.target-number, .your-number {
+    font-family: 'BebasNeueBold', Arial, Helvetica, sans-serif;
+    font-size: 2em;
+    line-height: 2em;
+    padding: 7px;
+    margin: 7px;
+}
+.target-number {
+    border: 4px solid black;
+    border-radius: 0.5em;
+}
+.hit {
+    color: #005000;
+    border-color: #005000;
+    background-color: #00f000;
+    text-decoration: line-through;
+}
+#guesses {
+    max-height: 11em;
+    overflow: auto;
+}
+.correct {
+    color: #00aa00;
+}
+.wrong {
+    color: #aa0000;
+}

@@ -1,0 +1,24 @@
+name: numbersgame
+version: 0.1.0
+
+authors:
+  - Mikko <mikko77792@gmail.com>
+
+targets:
+  numbersgame:
+    main: src/numbersgame.cr
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+  calcium:
+    github: adoxography/calcium
+  multiset:
+    github: tcrouch/multiset.cr
+  crirc:
+    github: Meoowww/Crirc
+    branch: master
+
+crystal: 0.34.0
+
+license: MIT

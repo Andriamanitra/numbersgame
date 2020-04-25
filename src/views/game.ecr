@@ -1,0 +1,83 @@
+<h2><a href="javascript:window.location.reload(true)"><%= game.username %>'s game</a></h2>
+
+<h2>Timer</h2>
+<span id="timer"></span>
+
+<h2>Targets:</h2>
+<%- game.targets.each do |target| -%>
+<span class="target-number"><%= target %></span>
+<%- end -%>
+
+<h2>Your numbers:</h2>
+<%- game.numbers.to_a.sort.each do |num| -%>
+<span class="your-number"><%= num %></span>
+<%- end -%>
+
+<h2>Guesses:</h2>
+<div id="guesses"></div>
+
+<p>
+<form id="guessForm">
+<input id="guess" name="guess" type="text" autofocus="autofocus" />
+<input type="submit" value="Guess!" />
+</form>
+
+
+<script>
+var guesses = [];
+var ws = new WebSocket(document.location.href.replace("http", "ws"));
+
+function addGuess(guess) {
+  var parent = document.getElementById("guesses");
+  var el = document.createElement("p");
+  el.innerHTML = guess.user + ": " + guess.guess + " = " + guess.result;
+  if (guess.hit) {
+    el.classList.add("correct")
+    for (var target of document.getElementsByClassName("target-number")) {
+      if (target.innerText === guess.result) {
+        target.classList.add("hit");
+        break;
+      }
+    }
+  } else {
+    el.classList.add("wrong")
+  }
+  parent.appendChild(el);
+  parent.scrollTop = parent.scrollHeight;
+  guesses.push(guess);
+}
+
+function updateTimer(remaining) {
+  document.getElementById("timer").innerHTML = remaining;
+}
+
+document.getElementById("guessForm").addEventListener("submit", function(e) {
+  var guess = document.getElementById("guess").value
+  ws.send("GUESS ~anon "+guess)
+  document.getElementById("guess").value = "";
+  e.preventDefault();
+})
+
+ws.onmessage = function (event) {
+  console.log(event.data)
+  const i = event.data.indexOf(" ");
+  var msgType = event.data.slice(0,i);
+  var message = event.data.slice(i+1);
+
+  switch(msgType) {
+    default:
+      console.log(event.data);
+    case "ALLGUESSES":
+      for (const guess of JSON.parse(message)) {
+        addGuess(guess);
+      }
+      break;
+    case "GUESSED":
+      addGuess(JSON.parse(message));
+      break;
+    case "TIMER":
+      updateTimer(message);
+      break;
+  }
+}
+</script>

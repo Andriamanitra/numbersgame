@@ -1,0 +1,25 @@
+From server to clients:
+
+TIMER <int>
+- broadcasted every second while a level is active
+- sent to websocket on join
+
+ALLGUESSES <[] of Guess (as json)>
+- sent to websocket on join
+
+GUESSED <Guess (as json)>
+- broadcast whenever a valid guess is made
+
+LEVELCOMPLETED
+- broadcast when the criteria for passing the level is met
+
+GAMEOVER
+- broadcast when game ends
+
+Guess is object like this {"user":"player123","guess":"5 + 6","result":"11","hit":false}
+
+
+From client to server:
+
+GUESS <username> <guess>
+- sent when WS client makes a guess
