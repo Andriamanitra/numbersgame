@@ -25,7 +25,7 @@
 <input type="submit" value="Guess!" />
 </form>
 
-
+<div id="gameover" style="visibility:hidden;">GAME OVER</div>
 <script>
 var guesses = [];
 var ws = new WebSocket(document.location.href.replace("http", "ws"));
@@ -63,6 +63,10 @@ function updateTimer(remaining) {
   document.getElementById("timer").innerHTML = remaining;
 }
 
+function showGameOver() {
+  document.getElementById("gameover").style.visibility = "visible";
+}
+
 document.getElementById("guessForm").addEventListener("submit", function(e) {
   var guess = document.getElementById("guess").value
   ws.send("GUESS ~anon "+guess)
@@ -72,9 +76,13 @@ document.getElementById("guessForm").addEventListener("submit", function(e) {
 
 ws.onmessage = function (event) {
   const i = event.data.indexOf(" ");
-  var msgType = event.data.slice(0,i);
-  var message = event.data.slice(i+1);
-
+  if (i > 0) {
+    var msgType = event.data.slice(0,i);
+    var message = event.data.slice(i+1);
+  } else {
+    var msgType = event.data;
+    var message = "";
+  }
   switch(msgType) {
     default:
       console.log(event.data);
@@ -95,6 +103,9 @@ ws.onmessage = function (event) {
       var current = splitted[0];
       var required = splitted[1];
       updateContinueButton(Number(current), Number(required))
+      break;
+    case "GAMEOVER":
+      showGameOver();
       break;
   }
 }
