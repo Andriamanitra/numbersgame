@@ -85,8 +85,8 @@ module Numbersgame
       @level = 1
       @timer = 30
       @stopped = true  # when true timer will stop running
-      @numbers = self.get_numbers(@level)
-      @targets = [1,2,3]
+      @numbers = get_numbers(1)
+      @targets = get_targets(1)
       @remaining = @targets.clone
       @guesses = [] of Guess
       @sockets = [] of HTTP::WebSocket
@@ -145,7 +145,7 @@ module Numbersgame
     end
 
     def level_completed()
-      @remaining.length < 3
+      @remaining.size < 3
     end
 
     def level_end()
