@@ -122,7 +122,7 @@ module Numbersgame
           Mjirandom.sample(3, 9, 2) +
           [10, 20, 25, 50, 75, 100].sample(2)
         )
-      when .<(10)
+      when 2..10
         Multiset.new (
           Mjirandom.sample(1, 9, 2) +
           Mjirandom.sample(1, 9, 2) +
