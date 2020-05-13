@@ -57,7 +57,7 @@ module Numbersgame
       return if msg.nil?
 
       # Message looks like it could be a valid guess
-      if md = msg.match(/(?<guess>\A[\d\s\*\+\-\/\(\)\!\^]+)/)
+      if md = msg.match(/(?<guess>\A[x\d\s\*\+\-\/\(\)\!\^]+)/)
         gamehost = channel.gsub('#', "")
         guesser = sender.split('!')[0]
         puts "IRC: ##{gamehost}: #{guesser} guessed #{msg}"
@@ -220,6 +220,9 @@ module Numbersgame
 
     def submit_guess(guesser : String, guess : String)
       return if @stopped
+
+      guess = guess.gsub("**", '^')
+      guess = guess.gsub('x', '*')
       return unless is_valid?(guess)
 
       begin
