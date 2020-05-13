@@ -260,8 +260,14 @@ module Numbersgame
 
   post "/startgame" do |env|
     username = env.params.body["username"].as(String)
-    @@games[username.downcase] = Game.new(username) unless @@games.has_key?(username.downcase)
-    env.redirect "/game/#{username.downcase}"
+    downcased = username.downcase
+    if username.strip.empty?
+      error = "Username can't be empty!"
+      render "src/views/error.ecr", "src/views/layout.ecr"
+    else
+      @@games[downcased] = Game.new(username) unless @@games.has_key?(downcased)
+      env.redirect "/game/#{downcased}"
+    end
   end
 
   # Viewing a game
