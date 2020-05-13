@@ -150,7 +150,7 @@ module Numbersgame
       when 1
         Mjirandom.sample(51, 200, 7).sort
       else
-        Mjirandom.sample(101, 300+100*level, 6+level).sort
+        Mjirandom.sample(51+10*level, 100+100*level, 6+level).sort
       end
     end
 
