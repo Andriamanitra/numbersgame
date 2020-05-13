@@ -1,31 +1,49 @@
-<h2><a href="javascript:window.location.reload(true)"><%= game.username %>'s game</a></h2>
-<h2>Level <%= game.level %></h2>
-<form id="nextlevelform" method="post">
-    <button id="nextLevelButton" type="submit" disabled>Next level!</button>
-</form>
-<h2>Timer</h2>
-<span id="timer"></span>
+<h2>
+  <a href="javascript:window.location.reload(true)">
+    <%= game.username %>'s game
+  </a> - Level <%= game.level %>
+</h2>
+<div id="game" class="container">
+  <form id="nextlevelform" method="post">
+      <button id="nextLevelButton" type="submit" disabled>Next level!</button>
+  </form>
+  <div id="timer-outer">
+    <div id="timer-inner"></div>
+    <span id="timer"></span>
+  </div>
+  
 
-<h2>Targets:</h2>
-<%- game.targets.each do |target| -%>
-<span class="target-number"><%= target %></span>
-<%- end -%>
+  <h2>Targets:</h2>
+  <div id="targets" class="container">
+    <%- game.targets.each do |target| -%>
+    <div class="target-number"><%= target %></div>
+    <%- end -%>
+  </div>
 
-<h2>Your numbers:</h2>
-<%- game.numbers.to_a.sort.each do |num| -%>
-<span class="your-number"><%= num %></span>
-<%- end -%>
+  <h2>Your numbers:</h2>
+  <div id="your-numbers" class="container">
+    <%- game.numbers.to_a.sort.each do |num| -%>
+    <div class="your-number"><%= num %></div>
+    <%- end -%>
+  </div>
 
-<h2>Guesses:</h2>
-<div id="guesses"></div>
+  <h2>Guesses:</h2>
+  <div id="guesses" class="container"></div>
 
-<p>
-<form id="guessForm">
-<input id="guess" name="guess" type="text" autofocus="autofocus" />
-<input type="submit" value="Guess!" />
-</form>
+  <form id="guessForm" autocomplete="off">
+  <input id="guess" name="guess" type="text" autofocus="autofocus" />
+  <input type="submit" value="Guess!" />
+  </form>
 
-<div id="gameover" style="visibility:hidden;">GAME OVER</div>
+  <div id="gameover" style="visibility:hidden;">
+  GAME OVER
+  <form action="/startgame" method="POST">
+    <input id="username" type="hidden" name="username" value="<%= game.username %>" />
+    <input type="submit" value="Try again?" />
+  </form>
+  </div>
+</div>
+
 <script>
 var guesses = [];
 var ws = new WebSocket(document.location.href.replace("http", "ws"));
@@ -33,7 +51,7 @@ document.getElementById("nextlevelform").action = window.location+'/next'
 
 function addGuess(guess) {
   var parent = document.getElementById("guesses");
-  var el = document.createElement("p");
+  var el = document.createElement("div");
   el.innerHTML = guess.user + ": " + guess.guess + " = " + guess.result;
   if (guess.hit) {
     el.classList.add("correct")
@@ -51,6 +69,12 @@ function addGuess(guess) {
   guesses.push(guess);
 }
 
+function formatTime(t) {
+  var minutes = Math.floor(t / 60);
+  var seconds = ("00" + (t % 60)).slice(-2);
+  return minutes+":"+seconds;
+}
+
 function updateContinueButton(current, required) {
   var butt = document.getElementById("nextLevelButton");
   butt.innerHTML = "Next level: "+current+"/"+required;
@@ -60,7 +84,11 @@ function updateContinueButton(current, required) {
 }
 
 function updateTimer(remaining) {
-  document.getElementById("timer").innerHTML = remaining;
+  var bar = document.getElementById("timer-inner");
+  var barWidth = remaining / 150 * 100;
+  bar.style.width = (100*remaining/150)+"%";
+  bar.style.background = barWidth < 10 ? "red" : "#00eb01";
+  document.getElementById("timer").innerHTML = formatTime(remaining);
 }
 
 function showGameOver() {

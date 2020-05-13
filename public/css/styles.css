@@ -1,30 +1,77 @@
+body {
+    background: url("/images/background.jpg");
+}
+h2 {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0px;
+}
+#index {
+    max-width: max(1000px, 40vw);
+    margin: 0 auto;
+}
+#game {
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: max(1000px, 40vw);
+}
+#targets, #your-numbers {
+    flex-grow: 0;
+    justify-content: space-evenly;
+    flex-flow: row wrap;
+}
+#guessForm{
+    padding: 10px;
+    text-align: center;
+}
+.target-number {
+    background-color: rgb(110,218,255);
+    border: 2px solid black;
+    border-radius: 0.5em;
+}
+.your-number {
+    border: 2px solid rgb(67,103,192);
+    border-radius: 100%;
+    background-color: white;
+}
+.target-number, .your-number {
+    text-align: center;
+    font-family: 'BebasNeueBold', Arial, Helvetica, sans-serif;
+    box-shadow: 3px 3px rgba(0,0,0,0.3);
+    font-size: 2em;
+    line-height: 2em;
+    height: 2em;
+    min-width: 2em;
+}
 .title, .title > *{
     font-size: 2em;
+    text-align: center;
+}
+.container {
+    display: flex;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.247);
+    background: rgba(255,255,255,0.3);
 }
 a {
     font-family: 'OuroborosRegular', Arial, Helvetica, sans-serif;
     color: black;
 }
-.target-number, .your-number {
-    font-family: 'BebasNeueBold', Arial, Helvetica, sans-serif;
-    font-size: 2em;
-    line-height: 2em;
-    padding: 7px;
-    margin: 7px;
-}
-.target-number {
-    border: 4px solid black;
-    border-radius: 0.5em;
-}
 .hit {
     color: #005000;
     border-color: #005000;
-    background-color: #00f000;
+    background-color: #00f000 !important;
     text-decoration: line-through;
 }
 #guesses {
-    max-height: 11em;
+    flex-direction: column;
+    flex-grow: 1;
     overflow: auto;
+    min-height: 5em;
+    max-height: 15em;
+    background: white;
 }
 #gameover {
     position: absolute;
@@ -36,11 +83,32 @@ a {
     text-align: center;
     font-size: 6em;
     color: red;
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.8);
 }
 .correct {
     color: #00aa00;
 }
 .wrong {
     color: #aa0000;
+}
+#timer-outer {
+    border: 1px solid black;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    background: #d8d8d8;
+    font-size: 1.5em;
+}
+#timer-inner {
+    height: 1.5em;
+    margin-bottom: -1.5em;
+}
+#nextlevelform {
+    text-align: center;
+}
+#nextLevelButton {
+    font-size: 2em;
+}
+#nextLevelButton:enabled {
+    background: #55ff55;
 }
