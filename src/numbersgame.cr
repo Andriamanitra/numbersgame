@@ -91,7 +91,13 @@ module Numbersgame
       @remaining = @targets.clone
       @guesses = [] of Guess
       @sockets = [] of HTTP::WebSocket
-      @@irc.join("##{username}")
+      begin
+        @@irc.join("##{username}")
+      rescue IO::Error
+        puts "WARNING: rescued IO::Error"
+        @@irc = IrcConnection.new
+        @@irc.join("##{username}")
+      end
       level_begin
     end
 
