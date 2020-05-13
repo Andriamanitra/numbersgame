@@ -84,7 +84,7 @@ module Numbersgame
     def initialize(username)
       @username = username
       @level = 1
-      @timer = 120
+      @timer = 150
       @stopped = true
       @numbers = get_numbers(1)
       @targets = get_targets(1)
@@ -178,7 +178,7 @@ module Numbersgame
       @guesses = [] of Guess
       puts "Starting level #{@level} with targets #{@targets.to_s}"
       broadcast("STATUS #{corrects()}/#{required()}")
-      start_timer(120)
+      start_timer(150)
     end
 
     def level_completed()
