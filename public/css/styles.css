@@ -112,3 +112,26 @@ a {
 #nextLevelButton:enabled {
     background: #55ff55;
 }
+@media screen and (max-width: 992px) {
+    h1 {
+        display: none;
+    }
+    h2 {
+        margin-top: 0px;
+        font-size: 1em;
+    }
+    #gameover {
+        top: 0px;
+        width: 100vw;
+        height: 100vh;
+    }
+    body {
+        overflow: hidden;
+    }
+    .target-number, .your-number {
+        font-size: 1.5em;
+        line-height: 1.5em;
+        min-width: 1.5em;
+        height: 1.5em;
+    }
+}
