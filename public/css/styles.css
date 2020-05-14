@@ -64,6 +64,9 @@ a {
     border-color: #005000;
     background-color: #00f000 !important;
     text-decoration: line-through;
+    animation: none !important;
+    transition-duration: 2s !important;
+    transform: scale(0.2) rotate3d(1,0,1,900deg) !important;
 }
 #guesses {
     flex-direction: column;
@@ -111,6 +114,36 @@ a {
 }
 #nextLevelButton:enabled {
     background: #55ff55;
+    animation: pulsing 1s infinite linear;
+    cursor: pointer;
+}
+.target-number {
+    animation: rocking 1.5s infinite linear;
+}
+.target-number:nth-of-type(3n+1) {
+    animation-duration: 1.4s;
+}
+.target-number:nth-of-type(3n+2) {
+    animation-duration: 1.6s;
+}
+@keyframes pulsing {
+    0% {transform: scale(1)}
+    50% {transform: scale(1.05)}
+    100% {transform: scale(1)}
+}
+@keyframes rocking {
+    0% {
+        transform: rotate(0deg) scale(1.05);
+    }
+    25% {
+        transform: rotate(5deg) scale(1.05);
+    }
+    75% {
+        transform: rotate(-5deg) scale(1.05);
+    }
+    100% {
+        transform: rotate(0deg) scale(1.05);
+    }
 }
 @media screen and (max-width: 992px) {
     h1 {
