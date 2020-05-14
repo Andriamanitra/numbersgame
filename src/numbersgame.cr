@@ -81,7 +81,7 @@ module Numbersgame
     getter numbers : Multiset(Int32)
     getter guesses : Array(Guess)
 
-    def initialize(username)
+    def initialize(username, twitch=true)
       @username = username
       @level = 1
       @timer = 150
@@ -91,12 +91,14 @@ module Numbersgame
       @remaining = @targets.clone
       @guesses = [] of Guess
       @sockets = [] of HTTP::WebSocket
-      begin
-        @@irc.join("##{username}")
-      rescue IO::Error
-        puts "WARNING: rescued IO::Error"
-        @@irc = IrcConnection.new
-        @@irc.join("##{username}")
+      if twitch
+        begin
+          @@irc.join("##{username}")
+        rescue IO::Error
+          puts "WARNING: rescued IO::Error"
+          @@irc = IrcConnection.new
+          @@irc.join("##{username}")
+        end
       end
       level_begin
     end
@@ -189,7 +191,7 @@ module Numbersgame
       @stopped = true
       unless level_completed
         broadcast("GAMEOVER")
-        @@irc.leave("##{@username}")
+        @@irc.leave("##{@username}") unless username.starts_with?('~')
         Numbersgame.games.delete(username.downcase)
       end
     end
@@ -259,14 +261,21 @@ module Numbersgame
   end
 
   post "/startgame" do |env|
-    username = env.params.body["username"].as(String)
-    downcased = username.downcase
-    if username.strip.empty?
-      error = "Username can't be empty!"
-      render "src/views/error.ecr", "src/views/layout.ecr"
+    if env.params.body.has_key?("username")
+      username = env.params.body["username"].as(String)
+      downcased = username.downcase
+      if username.strip.empty?
+        error = "Username can't be empty!"
+        render "src/views/error.ecr", "src/views/layout.ecr"
+      else
+        @@games[downcased] = Game.new(username) unless @@games.has_key?(downcased)
+        env.redirect "/game/#{downcased}"
+      end
     else
-      @@games[downcased] = Game.new(username) unless @@games.has_key?(downcased)
-      env.redirect "/game/#{downcased}"
+      # No username provided; playing in browser only
+      username = "~#{Random::Secure.hex(4)}"
+      @@games[username] = Game.new(username, twitch=false) unless @@games.has_key?(username)
+      env.redirect "/game/#{username}"
     end
   end
 

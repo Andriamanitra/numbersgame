@@ -1,17 +1,23 @@
 <div id="index">
-  <form action="/startgame" method="POST" autocomplete="off">
   <h3>How to play:</h3>
   <p>
   Your goal is to get to the target numbers using the numbers in "Your numbers" section.
   You may use mathematical operators (+, -, *, /, !, ^) and parentheses to achieve this task.
   </p>
 
-  <p>Enter your Twitch username and start guessing in your Twitch chat!</p>
+  <form action="/startgame" method="POST" autocomplete="off">
+    <p>Enter your Twitch username and start guessing in your Twitch chat!</p>
+    <p>
+      <label for="username">Username</label>
+      <input id="username" type="text" name="username" autofocus="autofocus" />
+      <input type="submit" value="Start game!" />
+    </p>
+  </form>
 
-  <p>
-  <label for="username">Username</label>
-  <input id="username" type="text" name="username" autofocus="autofocus" />
-  <input type="submit" value="Start game!" />
-  </p>
+  <form action="/startgame" method="POST" autocomplete="off">
+    <p>You can also play only in browser (you can still share the link to play with your friends).</p>
+    <p>
+      <input type="submit" value="Play without twitch.tv integration" />
+    </p>
   </form>
 </div>
