@@ -70,6 +70,9 @@ function addGuess(guess) {
 }
 
 function formatTime(t) {
+  if (t==0) {
+    return "Out of time!";
+  }
   var minutes = Math.floor(t / 60);
   var seconds = ("00" + (t % 60)).slice(-2);
   return minutes+":"+seconds;
@@ -77,7 +80,7 @@ function formatTime(t) {
 
 function updateContinueButton(current, required) {
   var butt = document.getElementById("nextLevelButton");
-  butt.innerHTML = "Next level: "+current+"/"+required;
+  butt.textContent = "Next level: "+current+"/"+required;
   if (current >= required) {
     butt.disabled = false;
   }
@@ -88,7 +91,7 @@ function updateTimer(remaining) {
   var barWidth = remaining / 150 * 100;
   bar.style.width = (100*remaining/150)+"%";
   bar.style.background = barWidth < 10 ? "red" : "#00eb01";
-  document.getElementById("timer").innerHTML = formatTime(remaining);
+  document.getElementById("timer").textContent = formatTime(remaining);
 }
 
 function showGameOver() {
