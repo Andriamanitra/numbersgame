@@ -138,7 +138,7 @@ a {
     text-align: center;
 }
 #nextLevelButton {
-    padding-top: 10px;
+    padding: 5px 15px;
     font-family: "Luckiest Guy", cursive;
     font-size: 2em;
 }
