@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
 body {
     background: url("/images/background.jpg");
+    margin: 0px;
 }
 h1 a, h2 a {
     text-decoration: none;
     background-image: linear-gradient(180deg, black, black) !important;
-    background-position: 0px 0.75em;
+    background-position: 0px 1em;
     background-repeat: repeat-x;
     background-size: 4px 0.1em;
 }
@@ -131,7 +132,7 @@ a {
 }
 #timer-inner {
     height: 1.5em;
-    margin-bottom: -1.2em;
+    margin-bottom: -1.5em;
 }
 #nextlevelform {
     text-align: center;
